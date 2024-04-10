@@ -1,0 +1,31 @@
+Traceback (most recent call last):
+  File "c:\Users\Kaan\Desktop\zenrows - bs4\main.py", line 71, in scrape_with_zenrows
+    print(f"Scraping: {url}")
+  File "C:\Users\Kaan\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1254.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\ufffd' in position 34: character maps to <undefined>
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "c:\Users\Kaan\Desktop\zenrows - bs4\main.py", line 88, in <module>
+    results = pool.map(scrape_with_zenrows, urls)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Kaan\AppData\Local\Programs\Python\Python312\Lib\multiprocessing\pool.py", line 367, in map
+    return self._map_async(func, iterable, mapstar, chunksize).get()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Kaan\AppData\Local\Programs\Python\Python312\Lib\multiprocessing\pool.py", line 774, in get
+    raise self._value
+  File "C:\Users\Kaan\AppData\Local\Programs\Python\Python312\Lib\multiprocessing\pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+                    ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Kaan\AppData\Local\Programs\Python\Python312\Lib\multiprocessing\pool.py", line 48, in mapstar
+    return list(map(*args))
+           ^^^^^^^^^^^^^^^^
+  File "c:\Users\Kaan\Desktop\zenrows - bs4\main.py", line 82, in scrape_with_zenrows
+    print(error_message)
+  File "C:\Users\Kaan\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1254.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\ufffd' in position 41: character maps to <undefined>

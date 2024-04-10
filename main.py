@@ -12,6 +12,7 @@ from multiprocessing.pool import ThreadPool
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from dotenv import load_dotenv
+from datetime import datetime
 
 load_dotenv()
 
@@ -32,8 +33,6 @@ retries = Retry(
 requests_session.mount("http://", HTTPAdapter(max_retries=retries))
 requests_session.mount("https://", HTTPAdapter(max_retries=retries))
 
-date_time = datetime.datetime.now()
-
 with open('database\data.json', 'r', encoding='utf-8') as file:
     database = json.load(file)
 
@@ -50,14 +49,19 @@ for number in df['Removed_Parts']:  # Replace 'YourColumnName' with the actual c
 print(len(urls))
 
 def extract_content(url, soup):
-    # extracting logic goes here
+    # Extracting logic goes here
     oos_block = soup.find(id="oosBlock")
     stat = "In Stock"
-    # sku_element = html.fromstring(response.content)
-    # text_content = sku_element.xpath('//*[@id="pdTitleBlock"]/ul/li[1]/text()')
+    
+    # Find the SKU element
     sku_li = soup.find('li', string=lambda t: 'SKU #' in str(t))
-    sku = sku_li.get_text(strip=True)  # Assuming SKU is guaranteed to be present
-    # print(sku)
+    
+    # Check if SKU element is found
+    if sku_li:
+        sku = sku_li.get_text(strip=True)
+    else:
+        sku = "SKU not found"
+    
     if oos_block:
         stat = "Out of Stock"
     return {    
@@ -66,7 +70,6 @@ def extract_content(url, soup):
         "url": url
     }
 
-
 def scrape_with_zenrows(url):
     try:
         print(f"Scraping: {url}")
@@ -74,10 +77,8 @@ def scrape_with_zenrows(url):
             "apikey": apikey,
             "url": url,
         })
-        # print(response.text)  # Indented within the try block
         soup = BeautifulSoup(response.text, "html.parser")
         return extract_content(url, soup)
-        
     except Exception as e:
         error_message = f"Error processing {url}: {e}"
         print(error_message)
@@ -90,6 +91,11 @@ results = pool.map(scrape_with_zenrows, urls)
 pool.close()
 pool.join()
 
+current_date = datetime.now()
+
+# Convert year, month, and day to strings and concatenate with dots
+formatted_date = str(current_date.year) + "." + str(current_date.month) + "." + str(current_date.day)
+
 def append_to_csv(file_path, data):
     with open(file_path, 'a', newline='') as csvfile:
         writer = csv.writer(csvfile)
@@ -97,7 +103,7 @@ def append_to_csv(file_path, data):
 
 for result in results:
     if result:
-        append_to_csv('output.csv', result)
+        append_to_csv(f'Output_{formatted_date}.csv', result)
 
 [print(result) for result in results if result]  # custom scraped content
 
