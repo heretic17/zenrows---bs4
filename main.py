@@ -33,18 +33,26 @@ retries = Retry(
 requests_session.mount("http://", HTTPAdapter(max_retries=retries))
 requests_session.mount("https://", HTTPAdapter(max_retries=retries))
 
+# Read Excel file containing the numbers
+excel_file = 'removed_dupes.xlsx'  # Change this to your Excel file path
+df = pd.read_excel(excel_file, dtype=str)
+
+numbers_list = [str(number) for number in df.iloc[:, 0].tolist()]
+
 with open('database\data.json', 'r', encoding='utf-8') as file:
     database = json.load(file)
 
-# Read Excel file containing the numbers
-excel_file = 'removed_dupes.xlsx'  # Change this to your Excel file path
-df = pd.read_excel(excel_file)
+keys_list = [str(key) for key in database.keys()]
+
+# Convert both lists to sets for easier comparison
+numbers_set = set(numbers_list)
+keys_set = set(keys_list)
+
+common_elements = numbers_set.intersection(keys_set)
 
 # Iterate through the numbers in the Excel file
-for number in df['Removed_Parts']:  # Replace 'YourColumnName' with the actual column name in your Excel file
-    number = str(number)  # Convert number to string since keys in your database are strings
-    if number in database:
-        urls.append(database[number]['url'])
+for key in common_elements:  # Replace 'YourColumnName' with the actual column name in your Excel file
+    urls.append(database[key]["url"])
 
 print(len(urls))
 
@@ -78,6 +86,7 @@ def scrape_with_zenrows(url):
             "url": url,
         })
         soup = BeautifulSoup(response.text, "html.parser")
+        # print(soup)
         return extract_content(url, soup)
     except Exception as e:
         error_message = f"Error processing {url}: {e}"
